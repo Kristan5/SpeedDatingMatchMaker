@@ -5,5 +5,6 @@ class Person:
         self.age = age
         self.gender = gender
         self.relationship = relationship
-        self.preference = []
+        self.preference = preference
+        self.matched_status = False
         self.past_dates = set()
