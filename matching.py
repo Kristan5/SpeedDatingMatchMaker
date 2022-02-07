@@ -1,7 +1,3 @@
-"""
-TODO: 
-- Somethings wrong with preference matching
-"""
 import csv
 from Person import *
 
@@ -60,12 +56,12 @@ class SpeedDating:
 		return False
 
 	def valid_new_date(self, person1, person2):
-		if person2 not in person1.past_dates: return True
-		return False
+		if person2 in person1.past_dates: return False
+		return True
 
 	def make_match(self, person1, person2):
-		person1.past_dates.add(person2)
-		person2.past_dates.add(person1)
+		person1.past_dates.append(person2)
+		person2.past_dates.append(person1)
 		person1.matched_status = True
 		person2.matched_status = True
 		self.matches.append([person1.name, person2.name])
@@ -88,15 +84,21 @@ class SpeedDating:
 			print("age: ", value.age)
 			print("gender: ", value.gender)
 			print("relationship: ", value.relationship)
+			print("past_dates: ", self.past_dates_toString(value))
 			print("preference: ", value.preference, '\n')
 
+	def past_dates_toString(self, Person):
+		result = []
+		for p in list(Person.past_dates):
+			result.append(p.name)
+		return result
 
 	# Checks: 
 	# 	- i not in j past dates
 	# 	- i gender in j preference
 	# 	- i age == j age
 	def match(self):
-		for p1_key, person1 in self.candidates.items(): 
+		for p1_key, person1 in self.candidates.items():
 			for p2_key, person2 in self.candidates.items(): 
 				if person1.matched_status or person2.matched_status or person1 == person2: continue
 				valid_preference = self.valid_preferenece(person1, person2)
@@ -107,11 +109,14 @@ class SpeedDating:
 					break
 
 
-
 if __name__ == '__main__':
+	numberOfDates = 5
+
 	s = SpeedDating()
 	s.readCSV()
-	# s.candidates_toString()
-	s.match()
-	s.matched_toString()
-	s.unmatched_toString()
+	for i in range(numberOfDates):
+		print("\nROUND #", i+1, ":\n")
+		s.candidates_toString()
+		s.match()
+		s.matched_toString()
+		s.unmatched_toString()
