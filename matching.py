@@ -14,36 +14,46 @@ class SpeedDating:
 	def readCSV(self):
 		with open("candidates.csv", 'r') as t1:
 			candidates_csv = t1.readlines()
-			for row in candidates_csv:
+			for row in candidates_csv[1:-1]:
 				candidate_attributes = row.split(",")
-				preference = self.preference_builder(candidate_attributes[11])
+				candidates_attribuets_len = len(candidate_attributes)
+				preference = self.preference_builder(candidate_attributes[candidates_attribuets_len-1])
+				gender = self.gender_builder(candidate_attributes[7])
 				candidate = Person(candidate_attributes[0],
 								   candidate_attributes[2],
 								   candidate_attributes[6],
-								   candidate_attributes[7],
-								   candidate_attributes[10],
+								   gender,
+								   candidate_attributes[candidates_attribuets_len-2],
 								   preference)
 				self.candidates[candidate_attributes[0]] = candidate
-		self.candidates.pop("id")
+
+	def gender_builder(self, gender):
+		men = {"men", "man", "male", "guy", "boy"}
+		women = {"women", "woman", "female", "girl"}
+		if self.format_gender(gender) in men: return "Men"
+		if self.format_gender(gender) in women: return "Women"
+		raise Exception("INVALID GENDER: ", gender)
+
+	def format_gender(self, gender): 
+		return ''.join(filter(str.isalnum, gender)).lower()
 
 	def preference_builder(self, preference): 
-		if preference == "Both":
-			return ["Men", "Women"]
+		if preference == "Both\n": return ["Men", "Women"]
+		if preference == "Men\n": return ["Men"]
+		if preference == "Women\n": return ["Women"]
 		return [preference]
 
-	def valid_preferenece(self, person1, person2, recur):
-		for i in person1.preference:
-			# if recur and i == person2.gender and self.valid_preferenece(person2, person1, False):
-				# return True
-			print("i: ", i, ": person2.gender: ", person2.gender)
-			if i == person2.gender: 
+	def valid_preferenece(self, person1, person2):
+		person1_check = self.check_individual_preference(person1, person2)
+		person2_check = self.check_individual_preference(person2, person1)
+		if person1_check and person2_check: return True
+		return False
+
+	def check_individual_preference(self, person1, person2):
+		for preference in person1.preference: 
+			if person2.gender == preference:
 				return True
 		return False
-		# for i in person1.preference: 
-		# 	if i in person2.preference: 
-		# 		print("Valid preference: ", person1.name, " : ", person2.name)
-		# 		return True
-		# return False
 
 	def valid_age(self, person1, person2):
 		if person1.age == person2.age: return True
@@ -71,6 +81,16 @@ class SpeedDating:
 		for i in s.matches: 
 			print(i)
 	
+	def candidates_toString(self): 
+		for key, value in self.candidates.items(): 
+			print("id: ", value.id)
+			print("name: ", value.name)
+			print("age: ", value.age)
+			print("gender: ", value.gender)
+			print("relationship: ", value.relationship)
+			print("preference: ", value.preference, '\n')
+
+
 	# Checks: 
 	# 	- i not in j past dates
 	# 	- i gender in j preference
@@ -78,9 +98,8 @@ class SpeedDating:
 	def match(self):
 		for p1_key, person1 in self.candidates.items(): 
 			for p2_key, person2 in self.candidates.items(): 
-				if person2.matched_status or person1 == person2: continue
-				valid_preference = self.valid_preferenece(person1, person2, True)
-				valid_age = self.valid_age(person1, person2)
+				if person1.matched_status or person2.matched_status or person1 == person2: continue
+				valid_preference = self.valid_preferenece(person1, person2)
 				valid_age = self.valid_age(person1, person2)
 				valid_new_date = self.valid_new_date(person1, person2)
 				if valid_preference and valid_new_date and valid_age:
@@ -92,10 +111,7 @@ class SpeedDating:
 if __name__ == '__main__':
 	s = SpeedDating()
 	s.readCSV()
+	# s.candidates_toString()
 	s.match()
 	s.matched_toString()
 	s.unmatched_toString()
-
-	# for key in s.candidates.keys():
-		# print(i[1].name)
-		# print(key)
