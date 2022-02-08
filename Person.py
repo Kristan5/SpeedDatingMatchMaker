@@ -7,4 +7,4 @@ class Person:
         self.relationship = relationship
         self.preference = preference
         self.matched_status = False
-        self.past_dates = []
+        self.past_dates = set()
