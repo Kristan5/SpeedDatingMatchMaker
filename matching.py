@@ -1,5 +1,6 @@
 import csv
 from Person import *
+from random import shuffle
 
 class SpeedDating:
 	# Candidates hashmap
@@ -57,11 +58,7 @@ class SpeedDating:
 
 	def valid_new_date(self, person1, person2):
 		if person2 not in person1.past_dates: return True
-		# elif person2 in person1.past_dates: 
-			# print("in past date: ", person2.name, " : ", person1.name)
 		return False
-
-		raise Exception("FAILED ")
 
 	def make_match(self, person1, person2):
 		person1.past_dates.add(person2)
@@ -107,8 +104,11 @@ class SpeedDating:
 	# 	- i gender in j preference
 	# 	- i age == j age
 	def match(self):
-		for p1_key, person1 in self.candidates.items():
-			for p2_key, person2 in self.candidates.items(): 
+		candidates = list(self.candidates.items())
+		shuffle(candidates)
+
+		for p1_key, person1 in candidates:
+			for p2_key, person2 in candidates: 
 				if person1.matched_status or person2.matched_status or person1 == person2: continue
 				valid_preference = self.valid_preferenece(person1, person2)
 				valid_age = self.valid_age(person1, person2)
