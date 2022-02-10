@@ -11,7 +11,7 @@ class SpeedDating:
 	def readCSV(self):
 		with open("candidatesReal.csv", 'r') as t1:
 			candidates_csv = t1.readlines()
-			for row in candidates_csv[1:-1]:
+			for row in candidates_csv[1:]:
 				candidate_attributes = row.split(",")
 				candidates_attribuets_len = len(candidate_attributes)
 				preference = self.preference_builder(candidate_attributes[candidates_attribuets_len-1])
