@@ -1,4 +1,3 @@
-import csv
 from Person import *
 from random import shuffle
 
